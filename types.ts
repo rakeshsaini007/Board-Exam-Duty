@@ -10,8 +10,11 @@ export interface Teacher {
 
 export interface Centre {
   name: string;
+  male?: number;
+  female?: number;
 }
 
+// Added DashboardStat interface to resolve the import error in components/Dashboard.tsx
 export interface DashboardStat {
   centre: string;
   male: number;

@@ -8,7 +8,6 @@ function doGet(e) {
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const teacherSheet = ss.getSheetByName("TeacherList");
-    // Updated sheet name from "Centre" to "AvailableDuty"
     const dutySheet = ss.getSheetByName("AvailableDuty");
 
     if (!teacherSheet || !dutySheet) {
@@ -28,9 +27,14 @@ function doGet(e) {
       };
     });
 
-    // Fetch centres from AvailableDuty sheet
+    // Fetch centres and stats from AvailableDuty sheet
+    // Assumes columns: Centre Name | Male Teachers | Female Teachers
     const dutyData = dutySheet.getDataRange().getValues();
-    const centres = dutyData.slice(1).map(row => ({ name: row[0] }));
+    const centres = dutyData.slice(1).map(row => ({
+      name: String(row[0]),
+      male: Number(row[1]) || 0,
+      female: Number(row[2]) || 0
+    }));
 
     return createJsonResponse({
       status: 'success',
@@ -85,6 +89,7 @@ function createJsonResponse(data) {
 
 /**
  * Setup dummy data if needed
+ * AvailableDuty sheet structure: Centre Name | Male Teachers | Female Teachers
  */
 function setupSheets() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -95,15 +100,15 @@ function setupSheets() {
     tSheet.appendRow(["HRMS Code", "Name of Teacher", "Gender", "School Name", "Mobile Number", "Examination Centre"]);
     tSheet.appendRow(["419255", "MANZOOLRUL HAQ NAVAZ KHAN", "M", "RATANPURA (Composite)", "9997067514", "ABC"]);
     tSheet.appendRow(["2166936", "PANKAJ KUMAR", "M", "RATANPURA (Composite)", "8279856228", "ABC"]);
-    tSheet.appendRow(["419144", "SUNIL SINGH", "M", "RATANPURA (Composite)", "9457019542", "XYZ"]);
   }
   
   let dSheet = ss.getSheetByName("AvailableDuty");
   if(!dSheet) {
     dSheet = ss.insertSheet("AvailableDuty");
-    dSheet.appendRow(["Centre Name"]);
-    dSheet.appendRow(["ABC"]);
-    dSheet.appendRow(["XYZ"]);
-    dSheet.appendRow(["PQR"]);
+    dSheet.appendRow(["Centre Name", "Male Teachers", "Female Teachers"]);
+    // These would normally be formulas like =COUNTIFS(TeacherList!F:F, A2, TeacherList!C:C, "M")
+    dSheet.appendRow(["ABC", 2, 0]);
+    dSheet.appendRow(["XYZ", 0, 0]);
+    dSheet.appendRow(["PQR", 0, 0]);
   }
 }
