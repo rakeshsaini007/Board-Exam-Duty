@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Teacher, Centre } from '../types';
 
 interface TeacherCardProps {
@@ -11,6 +11,24 @@ interface TeacherCardProps {
 const TeacherCard: React.FC<TeacherCardProps> = ({ teacher, centres, onSave }) => {
   const [selectedCentre, setSelectedCentre] = useState(teacher.examinationCentre);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Filter centres based on available duty for the teacher's gender
+  const availableCentres = useMemo(() => {
+    return centres.filter((c) => {
+      // If teacher is Male, only show centres with male duty > 0
+      // If teacher is Female, only show centres with female duty > 0
+      // Always include the teacher's CURRENTLY assigned centre so the dropdown is valid
+      const isCurrentCentre = c.name === teacher.examinationCentre;
+      if (isCurrentCentre) return true;
+
+      if (teacher.gender === 'M') {
+        return (c.male || 0) > 0;
+      } else if (teacher.gender === 'F') {
+        return (c.female || 0) > 0;
+      }
+      return false;
+    });
+  }, [centres, teacher.gender, teacher.examinationCentre]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -56,12 +74,15 @@ const TeacherCard: React.FC<TeacherCardProps> = ({ teacher, centres, onSave }) =
               className="w-full text-gray-800 font-medium bg-white p-2 rounded border-2 border-indigo-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
             >
               <option value="">Select a centre</option>
-              {centres.map((c) => (
+              {availableCentres.map((c) => (
                 <option key={c.name} value={c.name}>
-                  {c.name}
+                  {c.name} {c.name !== teacher.examinationCentre ? `(${teacher.gender === 'M' ? c.male : c.female} slots)` : ''}
                 </option>
               ))}
             </select>
+            <p className="text-[10px] text-gray-400 mt-1 italic">
+              * Only showing centres with available slots for {teacher.gender === 'M' ? 'Male' : 'Female'} teachers.
+            </p>
           </div>
         </div>
       </div>
@@ -69,9 +90,9 @@ const TeacherCard: React.FC<TeacherCardProps> = ({ teacher, centres, onSave }) =
       <div className="bg-gray-50 px-6 py-4 flex justify-end">
         <button
           onClick={handleSave}
-          disabled={isSaving || selectedCentre === teacher.examinationCentre}
+          disabled={isSaving || selectedCentre === teacher.examinationCentre || !selectedCentre}
           className={`flex items-center space-x-2 px-6 py-2 rounded-lg font-bold text-white transition-all shadow-md active:scale-95 ${
-            isSaving || selectedCentre === teacher.examinationCentre
+            isSaving || selectedCentre === teacher.examinationCentre || !selectedCentre
               ? 'bg-gray-300 cursor-not-allowed'
               : 'bg-indigo-600 hover:bg-indigo-700'
           }`}
