@@ -43,14 +43,27 @@ const App: React.FC = () => {
     }
   };
 
-  const handleSave = async (hrmsCode: string, centre: string) => {
+  const handleSave = async (hrmsCode: string, centre: string, isUpdate: boolean) => {
     const result = await updateTeacherCentre(hrmsCode, centre);
     if (result.status === 'success') {
+      // Show native alert as requested
+      const msg = isUpdate ? 'Data updated successfully!' : 'Data saved successfully!';
+      window.alert(msg);
+      
       // Reload everything to get updated stats from AvailableDuty sheet
       await loadData();
-      setSaveStatus({ type: 'success', message: 'Teacher assignment updated successfully!' });
+      
+      // Also find the updated teacher record to refresh the card
+      const updatedList = await fetchAllData(); // Use fresh fetch to sync all states
+      if (updatedList.status === 'success' && updatedList.data) {
+          const freshTeacher = updatedList.data.teachers.find(t => t.hrmsCode === hrmsCode);
+          if (freshTeacher) setSelectedTeacher(freshTeacher);
+      }
+
+      setSaveStatus({ type: 'success', message: msg });
       setTimeout(() => setSaveStatus(null), 3000);
     } else {
+      window.alert('Error: ' + (result.message || 'Failed to process record.'));
       setSaveStatus({ type: 'error', message: result.message || 'Failed to update record.' });
     }
   };
@@ -100,7 +113,7 @@ const App: React.FC = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </span>
-              Search Teacher record
+              Search Teacher Record
             </h2>
             <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
               <input
@@ -230,7 +243,7 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      {/* Persistence Notifications */}
+      {/* Global Status Notifications */}
       {saveStatus && (
         <div className={`fixed bottom-10 left-1/2 transform -translate-x-1/2 max-w-md w-full p-5 rounded-2xl flex items-center space-x-4 shadow-2xl border-2 z-50 animate-bounce ${
           saveStatus.type === 'success' ? 'bg-green-600 border-green-400 text-white' : 'bg-red-600 border-red-400 text-white'
