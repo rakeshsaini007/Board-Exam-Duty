@@ -1,0 +1,5 @@
+{
+  "name": "Teacher Assignment Portal",
+  "description": "A comprehensive portal for managing teacher assignments to examination centres, featuring HRMS-based lookup, editable center selection, and a live dashboard for gender-based statistics.",
+  "requestFramePermissions": []
+}
