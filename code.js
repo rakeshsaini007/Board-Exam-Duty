@@ -8,15 +8,15 @@ function doGet(e) {
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const teacherSheet = ss.getSheetByName("TeacherList");
-    const centreSheet = ss.getSheetByName("Centre");
+    // Updated sheet name from "Centre" to "AvailableDuty"
+    const dutySheet = ss.getSheetByName("AvailableDuty");
 
-    if (!teacherSheet || !centreSheet) {
-      return createJsonResponse({ status: 'error', message: 'Sheets "TeacherList" or "Centre" not found.' });
+    if (!teacherSheet || !dutySheet) {
+      return createJsonResponse({ status: 'error', message: 'Sheets "TeacherList" or "AvailableDuty" not found.' });
     }
 
     // Fetch Teachers
     const teacherData = teacherSheet.getDataRange().getValues();
-    const headers = teacherData[0];
     const teachers = teacherData.slice(1).map(row => {
       return {
         hrmsCode: String(row[0]),
@@ -28,9 +28,9 @@ function doGet(e) {
       };
     });
 
-    // Fetch Centres
-    const centreData = centreSheet.getDataRange().getValues();
-    const centres = centreData.slice(1).map(row => ({ name: row[0] }));
+    // Fetch centres from AvailableDuty sheet
+    const dutyData = dutySheet.getDataRange().getValues();
+    const centres = dutyData.slice(1).map(row => ({ name: row[0] }));
 
     return createJsonResponse({
       status: 'success',
@@ -98,12 +98,12 @@ function setupSheets() {
     tSheet.appendRow(["419144", "SUNIL SINGH", "M", "RATANPURA (Composite)", "9457019542", "XYZ"]);
   }
   
-  let cSheet = ss.getSheetByName("Centre");
-  if(!cSheet) {
-    cSheet = ss.insertSheet("Centre");
-    cSheet.appendRow(["Centre Name"]);
-    cSheet.appendRow(["ABC"]);
-    cSheet.appendRow(["XYZ"]);
-    cSheet.appendRow(["PQR"]);
+  let dSheet = ss.getSheetByName("AvailableDuty");
+  if(!dSheet) {
+    dSheet = ss.insertSheet("AvailableDuty");
+    dSheet.appendRow(["Centre Name"]);
+    dSheet.appendRow(["ABC"]);
+    dSheet.appendRow(["XYZ"]);
+    dSheet.appendRow(["PQR"]);
   }
 }
