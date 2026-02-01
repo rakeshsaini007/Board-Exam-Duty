@@ -54,67 +54,114 @@ const TeacherCard: React.FC<TeacherCardProps> = ({ teacher, centres, onSave }) =
           <script src="https://cdn.tailwindcss.com"></script>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700;900&display=swap');
-            body { font-family: 'Noto Sans Devanagari', sans-serif; }
-            @media print {
-              .no-print { display: none; }
-              body { padding: 0; margin: 0; }
+            body { 
+                font-family: 'Noto Sans Devanagari', sans-serif; 
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                background: #f3f4f6;
             }
-            .card-border { border: 4px double #4F46E5; }
+            @page {
+              size: A4 portrait;
+              margin: 0;
+            }
+            .duty-card {
+              width: 105mm;
+              height: 148.5mm;
+              background: white;
+              padding: 8mm;
+              box-sizing: border-box;
+              border: 1px solid #e5e7eb;
+              position: relative;
+              overflow: hidden;
+              display: flex;
+              flex-direction: column;
+            }
+            .card-border-inner {
+              border: 2px double #4F46E5;
+              height: 100%;
+              padding: 4mm;
+              display: flex;
+              flex-direction: column;
+              border-radius: 8px;
+            }
+            @media print {
+              body { background: white; }
+              .no-print { display: none; }
+              .duty-card { 
+                  border: none; 
+                  box-shadow: none;
+                  margin: 0;
+              }
+            }
           </style>
         </head>
-        <body class="bg-white p-8">
-          <div class="max-w-2xl mx-auto card-border p-8 rounded-xl shadow-sm relative">
-            <div class="text-center border-b-2 border-indigo-100 pb-6 mb-8">
-              <h1 class="text-2xl font-black text-indigo-900 tracking-tight">बेसिक शिक्षा परिषद उत्तर प्रदेश, प्रयागराज</h1>
-              <p class="text-gray-700 font-bold mt-1 text-lg">बोर्ड परीक्षा वर्ष - 2026</p>
-              <p class="text-indigo-600 font-black mt-1 text-xl">कक्ष निरीक्षक</p>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-y-6 gap-x-12 mb-10">
-              <div>
-                <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">HRMS CODE</p>
-                <p class="text-lg font-bold text-gray-900">${teacher.hrmsCode}</p>
-              </div>
-              <div>
-                <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">TEACHER NAME</p>
-                <p class="text-lg font-bold text-gray-900">${teacher.name}</p>
-              </div>
-              <div>
-                <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">GENDER</p>
-                <p class="text-lg font-bold text-gray-900">${teacher.gender === 'M' ? 'Male' : 'Female'}</p>
-              </div>
-              <div>
-                <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">MOBILE NO.</p>
-                <p class="text-lg font-bold text-gray-900">${teacher.mobileNumber}</p>
-              </div>
-              <div class="col-span-2">
-                <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">SCHOOL NAME</p>
-                <p class="text-lg font-bold text-gray-900 uppercase">${teacher.schoolName}</p>
-              </div>
-            </div>
+        <body>
+          <div class="duty-card shadow-2xl my-10">
+            <div class="card-border-inner">
+                <div class="text-center border-b border-indigo-100 pb-2 mb-3">
+                  <h1 class="text-[13px] font-black text-indigo-900 leading-tight">बेसिक शिक्षा परिषद उत्तर प्रदेश, प्रयागराज</h1>
+                  <p class="text-gray-700 font-bold text-[10px] mt-0.5">बोर्ड परीक्षा वर्ष - 2026</p>
+                  <p class="text-indigo-600 font-black text-[11px] mt-0.5">कक्ष निरीक्षक</p>
+                </div>
+                
+                <div class="space-y-2 mb-auto">
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <p class="text-[7px] font-black text-indigo-400 uppercase tracking-widest">HRMS CODE</p>
+                      <p class="text-[10px] font-bold text-gray-900">${teacher.hrmsCode}</p>
+                    </div>
+                    <div>
+                      <p class="text-[7px] font-black text-indigo-400 uppercase tracking-widest">GENDER</p>
+                      <p class="text-[10px] font-bold text-gray-900">${teacher.gender === 'M' ? 'Male' : 'Female'}</p>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <p class="text-[7px] font-black text-indigo-400 uppercase tracking-widest">TEACHER NAME</p>
+                    <p class="text-[10px] font-bold text-gray-900 leading-tight uppercase">${teacher.name}</p>
+                  </div>
+                  
+                  <div>
+                    <p class="text-[7px] font-black text-indigo-400 uppercase tracking-widest">SCHOOL NAME</p>
+                    <p class="text-[9px] font-bold text-gray-800 leading-tight uppercase">${teacher.schoolName}</p>
+                  </div>
 
-            <div class="bg-indigo-50 border-2 border-indigo-200 p-6 rounded-2xl text-center mb-10">
-              <p class="text-sm font-black text-indigo-600 mb-2">खण्ड शिक्षा अधिकारी-स्वार द्वारा आवंटित परीक्षा केन्द्र</p>
-              <h2 class="text-3xl font-black text-indigo-900 uppercase">${teacher.examinationCentre}</h2>
-            </div>
+                  <div>
+                    <p class="text-[7px] font-black text-indigo-400 uppercase tracking-widest">MOBILE NO.</p>
+                    <p class="text-[10px] font-bold text-gray-900">${teacher.mobileNumber}</p>
+                  </div>
+                </div>
 
-            <div class="flex justify-between items-end pt-8 border-t border-gray-100">
-              <div class="text-[10px] text-gray-400 font-medium italic">
-                Generated on: ${new Date().toLocaleString()}
-              </div>
-              <div class="text-center w-40">
-                <div class="h-12 border-b-2 border-gray-200 mb-2"></div>
-                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Authorized Signature</p>
-              </div>
-            </div>
+                <div class="bg-indigo-50 border border-indigo-200 p-3 rounded-lg text-center my-3">
+                  <p class="text-[9px] font-black text-indigo-600 mb-1 leading-tight">खण्ड शिक्षा अधिकारी-स्वार द्वारा आवंटित परीक्षा केन्द्र</p>
+                  <h2 class="text-[12px] font-black text-indigo-900 leading-tight uppercase">${teacher.examinationCentre}</h2>
+                </div>
 
-            <div class="absolute top-4 right-4 text-[8px] font-bold text-indigo-100 select-none -rotate-12 pointer-events-none">
-              VERIFIED PORTAL RECORD
+                <div class="flex justify-between items-end mt-auto pt-3 border-t border-gray-100">
+                  <div class="text-[6px] text-gray-400 font-medium italic">
+                    Date: ${new Date().toLocaleDateString()}
+                  </div>
+                  <div class="text-center w-20">
+                    <div class="h-5 border-b border-gray-200 mb-1"></div>
+                    <p class="text-[6px] font-bold text-gray-500 uppercase tracking-wider">Auth. Signature</p>
+                  </div>
+                </div>
+                
+                <div class="absolute top-2 right-2 text-[5px] font-bold text-indigo-100 select-none -rotate-12 pointer-events-none uppercase">
+                  Verified Portal Record
+                </div>
             </div>
           </div>
-          <div class="max-w-2xl mx-auto mt-8 flex justify-center no-print">
-            <button onclick="window.print()" class="bg-indigo-600 text-white font-bold py-3 px-10 rounded-xl shadow-lg hover:bg-indigo-700 transition-all">
-              Print Duty Card
+          
+          <div class="fixed bottom-8 left-0 right-0 flex justify-center no-print">
+            <button onclick="window.print()" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-full shadow-2xl hover:bg-indigo-700 transition-all flex items-center space-x-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              </svg>
+              <span>Print Duty Card (1/4 A4 Size)</span>
             </button>
           </div>
         </body>
