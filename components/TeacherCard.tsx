@@ -25,7 +25,6 @@ const TeacherCard: React.FC<TeacherCardProps> = ({ teacher, centres, onSave }) =
   // Filter centres based on available duty for the teacher's gender
   const availableCentres = useMemo(() => {
     return centres.filter((c) => {
-      // Always include the teacher's CURRENTLY assigned centre so the dropdown is valid
       const isCurrentCentre = c.name === teacher.examinationCentre;
       if (isCurrentCentre) return true;
 
@@ -42,6 +41,85 @@ const TeacherCard: React.FC<TeacherCardProps> = ({ teacher, centres, onSave }) =
     setIsSaving(true);
     await onSave(teacher.hrmsCode, selectedCentre, isExistingAssignment);
     setIsSaving(false);
+  };
+
+  const handleDownloadCard = () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const htmlContent = `
+      <html>
+        <head>
+          <title>Duty Card - ${teacher.hrmsCode}</title>
+          <script src="https://cdn.tailwindcss.com"></script>
+          <style>
+            @media print {
+              .no-print { display: none; }
+              body { padding: 0; margin: 0; }
+            }
+            .card-border { border: 4px double #4F46E5; }
+          </style>
+        </head>
+        <body class="bg-white p-8">
+          <div class="max-w-2xl mx-auto card-border p-8 rounded-xl shadow-sm relative">
+            <div class="text-center border-b-2 border-indigo-100 pb-6 mb-8">
+              <h1 class="text-2xl font-black text-indigo-900 uppercase tracking-tighter">Official Examination Duty Card</h1>
+              <p class="text-gray-500 font-bold mt-1 uppercase text-sm">Session 2024-2025</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-y-6 gap-x-12 mb-10">
+              <div>
+                <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">HRMS CODE</p>
+                <p class="text-lg font-bold text-gray-900">${teacher.hrmsCode}</p>
+              </div>
+              <div>
+                <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">TEACHER NAME</p>
+                <p class="text-lg font-bold text-gray-900">${teacher.name}</p>
+              </div>
+              <div>
+                <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">GENDER</p>
+                <p class="text-lg font-bold text-gray-900">${teacher.gender === 'M' ? 'Male' : 'Female'}</p>
+              </div>
+              <div>
+                <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">MOBILE NO.</p>
+                <p class="text-lg font-bold text-gray-900">${teacher.mobileNumber}</p>
+              </div>
+              <div class="col-span-2">
+                <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">SCHOOL NAME</p>
+                <p class="text-lg font-bold text-gray-900 uppercase">${teacher.schoolName}</p>
+              </div>
+            </div>
+
+            <div class="bg-indigo-50 border-2 border-indigo-200 p-6 rounded-2xl text-center mb-10">
+              <p class="text-xs font-black text-indigo-600 uppercase tracking-widest mb-2">Assigned Examination Centre</p>
+              <h2 class="text-3xl font-black text-indigo-900 uppercase">${teacher.examinationCentre}</h2>
+            </div>
+
+            <div class="flex justify-between items-end pt-8 border-t border-gray-100">
+              <div class="text-[10px] text-gray-400 font-medium italic">
+                Generated on: ${new Date().toLocaleString()}
+              </div>
+              <div class="text-center w-40">
+                <div class="h-12 border-b-2 border-gray-200 mb-2"></div>
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Authorized Signature</p>
+              </div>
+            </div>
+
+            <div class="absolute top-4 right-4 text-[8px] font-bold text-indigo-100 select-none -rotate-12 pointer-events-none">
+              VERIFIED PORTAL RECORD
+            </div>
+          </div>
+          <div class="max-w-2xl mx-auto mt-8 flex justify-center no-print">
+            <button onclick="window.print()" class="bg-indigo-600 text-white font-bold py-3 px-10 rounded-xl shadow-lg hover:bg-indigo-700 transition-all">
+              Print Duty Card
+            </button>
+          </div>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
   };
 
   return (
@@ -107,43 +185,55 @@ const TeacherCard: React.FC<TeacherCardProps> = ({ teacher, centres, onSave }) =
         </div>
       </div>
 
-      <div className="bg-gray-50 px-6 py-4 flex justify-between items-center">
+      <div className="bg-gray-50 px-6 py-5 flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="text-xs text-gray-500 font-medium">
           {isExistingAssignment ? (
             <span className="flex items-center text-amber-600">
               <span className="w-2 h-2 bg-amber-500 rounded-full mr-2"></span>
-              Records found in TeacherList
+              Assigned: {teacher.examinationCentre}
             </span>
           ) : (
             <span className="flex items-center text-indigo-500">
               <span className="w-2 h-2 bg-indigo-500 rounded-full mr-2"></span>
-              Ready for first assignment
+              No current assignment
             </span>
           )}
         </div>
-        <button
-          onClick={handleSave}
-          disabled={isSaving || selectedCentre === teacher.examinationCentre || !selectedCentre}
-          className={`flex items-center space-x-2 px-8 py-3 rounded-xl font-black text-white transition-all shadow-lg active:scale-95 ${
-            isSaving || selectedCentre === teacher.examinationCentre || !selectedCentre
-              ? 'bg-gray-300 cursor-not-allowed shadow-none'
-              : isExistingAssignment 
-                ? 'bg-amber-600 hover:bg-amber-700' 
-                : 'bg-indigo-600 hover:bg-indigo-700'
-          }`}
-        >
-          {isSaving ? (
-            <>
-              <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
+        
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          {isExistingAssignment && (
+            <button
+              onClick={handleDownloadCard}
+              className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-3 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition-all shadow-md active:scale-95 border-b-4 border-emerald-800"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              <span>Download Card</span>
+            </button>
+          )}
+
+          <button
+            onClick={handleSave}
+            disabled={isSaving || selectedCentre === teacher.examinationCentre || !selectedCentre}
+            className={`flex-1 sm:flex-none flex items-center justify-center space-x-2 px-8 py-3 rounded-xl font-black text-white transition-all shadow-lg active:scale-95 ${
+              isSaving || selectedCentre === teacher.examinationCentre || !selectedCentre
+                ? 'bg-gray-300 cursor-not-allowed shadow-none'
+                : isExistingAssignment 
+                  ? 'bg-amber-600 hover:bg-amber-700 border-b-4 border-amber-800' 
+                  : 'bg-indigo-600 hover:bg-indigo-700 border-b-4 border-indigo-800'
+            }`}
+          >
+            {isSaving ? (
+              <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <span>Processing...</span>
-            </>
-          ) : (
-            <span>{isExistingAssignment ? 'Update Assignment' : 'Submit Assignment'}</span>
-          )}
-        </button>
+            ) : (
+              <span>{isExistingAssignment ? 'Update' : 'Submit'}</span>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
