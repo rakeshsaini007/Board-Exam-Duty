@@ -94,7 +94,7 @@ const TeacherCard: React.FC<TeacherCardProps> = ({ teacher, centres, onSave }) =
             </div>
 
             <div class="bg-indigo-50 border-2 border-indigo-200 p-6 rounded-2xl text-center mb-10">
-              <p class="text-xs font-black text-indigo-600 uppercase tracking-widest mb-2">Assigned Examination Centre</p>
+              <p class="text-sm font-black text-indigo-600 mb-2">खण्ड शिक्षा अधिकारी-स्वार द्वारा आवंटित परीक्षा केन्द्र</p>
               <h2 class="text-3xl font-black text-indigo-900 uppercase">${teacher.examinationCentre}</h2>
             </div>
 
