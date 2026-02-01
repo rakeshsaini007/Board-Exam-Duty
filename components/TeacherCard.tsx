@@ -141,13 +141,18 @@ const TeacherCard: React.FC<TeacherCardProps> = ({ teacher, centres, onSave }) =
                 </div>
 
                 <div class="flex justify-between items-end mt-auto pt-3 border-t border-gray-100">
-                  <div class="text-[6px] text-gray-400 font-medium italic">
-                    Date: ${new Date().toLocaleDateString()}
-                  </div>
-                  <div class="text-center w-20">
+                  <div class="text-center w-[45%]">
                     <div class="h-5 border-b border-gray-200 mb-1"></div>
-                    <p class="text-[6px] font-bold text-gray-500 uppercase tracking-wider">Auth. Signature</p>
+                    <p class="text-[7px] font-bold text-gray-700 leading-tight">हस्ताक्षर कक्ष निरीक्षक</p>
                   </div>
+                  <div class="text-center w-[52%]">
+                    <div class="h-5 border-b border-gray-200 mb-1"></div>
+                    <p class="text-[7px] font-bold text-gray-700 leading-tight">प्रति हस्ताक्षर खण्ड शिक्षा अधिकारी</p>
+                  </div>
+                </div>
+                
+                <div class="text-[6px] text-gray-400 font-medium italic mt-2 text-right">
+                    दिनांक: ${new Date().toLocaleDateString('hi-IN')}
                 </div>
                 
                 <div class="absolute top-2 right-2 text-[5px] font-bold text-indigo-100 select-none -rotate-12 pointer-events-none uppercase">
