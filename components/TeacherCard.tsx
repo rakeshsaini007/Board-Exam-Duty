@@ -47,12 +47,6 @@ const TeacherCard: React.FC<TeacherCardProps> = ({ teacher, centres, onSave }) =
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
-    // Construct QR Data string
-    const qrData = encodeURIComponent(
-      `HRMS: ${teacher.hrmsCode}\nName: ${teacher.name}\nSchool: ${teacher.schoolName}\nCentre: ${teacher.examinationCentre}\nSession: 2024-2025 (Board 2026)`
-    );
-    const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
-
     const htmlContent = `
       <html>
         <head>
@@ -113,20 +107,15 @@ const TeacherCard: React.FC<TeacherCardProps> = ({ teacher, centres, onSave }) =
                   <p class="text-indigo-600 font-black text-[11px] mt-0.5">कक्ष निरीक्षक</p>
                 </div>
                 
-                <div class="space-y-2 mb-auto">
-                  <div class="flex justify-between items-start">
-                    <div class="space-y-2 flex-1">
-                      <div>
-                        <p class="text-[7px] font-black text-indigo-400 uppercase tracking-widest">HRMS CODE</p>
-                        <p class="text-[10px] font-bold text-gray-900">${teacher.hrmsCode}</p>
-                      </div>
-                      <div>
-                        <p class="text-[7px] font-black text-indigo-400 uppercase tracking-widest">GENDER</p>
-                        <p class="text-[10px] font-bold text-gray-900">${teacher.gender === 'M' ? 'Male' : 'Female'}</p>
-                      </div>
+                <div class="space-y-3 mb-auto">
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <p class="text-[7px] font-black text-indigo-400 uppercase tracking-widest">HRMS CODE</p>
+                      <p class="text-[10px] font-bold text-gray-900">${teacher.hrmsCode}</p>
                     </div>
-                    <div class="ml-2 border border-gray-100 p-0.5 rounded">
-                      <img src="${qrImageUrl}" alt="QR Code" class="w-16 h-16" />
+                    <div>
+                      <p class="text-[7px] font-black text-indigo-400 uppercase tracking-widest">GENDER</p>
+                      <p class="text-[10px] font-bold text-gray-900">${teacher.gender === 'M' ? 'Male' : 'Female'}</p>
                     </div>
                   </div>
                   
