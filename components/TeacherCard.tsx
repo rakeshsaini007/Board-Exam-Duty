@@ -53,6 +53,8 @@ const TeacherCard: React.FC<TeacherCardProps> = ({ teacher, centres, onSave }) =
           <title>Duty Card - ${teacher.hrmsCode}</title>
           <script src="https://cdn.tailwindcss.com"></script>
           <style>
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700;900&display=swap');
+            body { font-family: 'Noto Sans Devanagari', sans-serif; }
             @media print {
               .no-print { display: none; }
               body { padding: 0; margin: 0; }
@@ -63,8 +65,9 @@ const TeacherCard: React.FC<TeacherCardProps> = ({ teacher, centres, onSave }) =
         <body class="bg-white p-8">
           <div class="max-w-2xl mx-auto card-border p-8 rounded-xl shadow-sm relative">
             <div class="text-center border-b-2 border-indigo-100 pb-6 mb-8">
-              <h1 class="text-2xl font-black text-indigo-900 uppercase tracking-tighter">Official Examination Duty Card</h1>
-              <p class="text-gray-500 font-bold mt-1 uppercase text-sm">Session 2024-2025</p>
+              <h1 class="text-2xl font-black text-indigo-900 tracking-tight">बेसिक शिक्षा परिषद उत्तर प्रदेश, प्रयागराज</h1>
+              <p class="text-gray-700 font-bold mt-1 text-lg">बोर्ड परीक्षा वर्ष - 2026</p>
+              <p class="text-indigo-600 font-black mt-1 text-xl">कक्ष निरीक्षक</p>
             </div>
             
             <div class="grid grid-cols-2 gap-y-6 gap-x-12 mb-10">
