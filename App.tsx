@@ -4,6 +4,9 @@ import { Teacher, Centre, ApiResponse } from './types';
 import { fetchAllData, updateTeacherCentre } from './services/api';
 import TeacherCard from './components/TeacherCard';
 
+// SET THE PORTAL DEADLINE HERE: 10 Feb 2026, 5:00 PM
+const DEADLINE = new Date('2026-02-10T17:00:00').getTime();
+
 const App: React.FC = () => {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [centres, setCentres] = useState<Centre[]>([]);
@@ -12,8 +15,16 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [currentTime, setCurrentTime] = useState(Date.now());
+
+  // Check if current time has passed the deadline
+  const isExpired = useMemo(() => currentTime >= DEADLINE, [currentTime]);
 
   const loadData = useCallback(async () => {
+    if (isExpired) {
+        setLoading(false);
+        return;
+    }
     setLoading(true);
     const result = await fetchAllData();
     if (result.status === 'success' && result.data) {
@@ -24,14 +35,20 @@ const App: React.FC = () => {
       setError(result.message || 'Error loading data from Google Sheets.');
     }
     setLoading(false);
-  }, []);
+  }, [isExpired]);
 
   useEffect(() => {
     loadData();
+    
+    // Optional: Update timer every minute to handle users who leave the tab open
+    const timer = setInterval(() => setCurrentTime(Date.now()), 60000);
+    return () => clearInterval(timer);
   }, [loadData]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isExpired) return;
+    
     const found = teachers.find((t) => t.hrmsCode === searchTerm.trim());
     if (found) {
       setSelectedTeacher(found);
@@ -43,6 +60,10 @@ const App: React.FC = () => {
   };
 
   const handleSave = async (hrmsCode: string, centre: string, isUpdate: boolean) => {
+    if (isExpired) {
+        window.alert("Deadline reached. Assignments are no longer accepted.");
+        return;
+    }
     const result = await updateTeacherCentre(hrmsCode, centre);
     if (result.status === 'success') {
       const msg = isUpdate ? 'Data updated successfully!' : 'Data saved successfully!';
@@ -64,7 +85,8 @@ const App: React.FC = () => {
     }
   };
 
-  if (loading && teachers.length === 0) {
+  // 1. Loading State
+  if (loading && teachers.length === 0 && !isExpired) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600 mb-4"></div>
@@ -73,6 +95,33 @@ const App: React.FC = () => {
     );
   }
 
+  // 2. Expired State
+  if (isExpired) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl p-10 text-center border border-gray-100 transform transition-all animate-fadeIn">
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-red-50 text-red-500 rounded-full mb-8 shadow-inner">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">Portal Access Closed</h1>
+          <div className="h-1 w-16 bg-red-200 mx-auto mb-6 rounded-full"></div>
+          <p className="text-gray-600 font-medium leading-relaxed mb-8">
+            The deadline for examination duty assignment <br/>
+            <span className="font-bold text-red-600">(10 Feb 2026, 05:00 PM)</span> <br/>
+            has officially passed. 
+          </p>
+          <div className="bg-gray-50 rounded-2xl p-6 text-sm text-gray-500 border border-gray-100">
+            Please contact the <span className="font-bold text-gray-700">Block Education Office (BEO)</span> for any urgent corrections or manual assignment requests.
+          </div>
+          <p className="mt-8 text-[10px] text-gray-400 uppercase tracking-widest font-black">Basic Education Department, UP</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 3. Normal Active State
   return (
     <div className="max-w-4xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
       <header className="mb-12 text-center">
@@ -80,6 +129,10 @@ const App: React.FC = () => {
           Available <span className="text-indigo-600 underline decoration-indigo-200">Duty</span> Portal
         </h1>
         <p className="mt-4 text-xl text-gray-500 font-medium">Official Examination Centre Assignment & Card Generation</p>
+        <div className="mt-4 inline-flex items-center bg-indigo-50 px-3 py-1 rounded-full text-[10px] font-bold text-indigo-600 uppercase tracking-wider">
+          <span className="w-2 h-2 bg-indigo-500 rounded-full mr-2 animate-pulse"></span>
+          Link Active Until 10 Feb 2026, 05:00 PM
+        </div>
       </header>
 
       <div className="space-y-10 max-w-2xl mx-auto">
